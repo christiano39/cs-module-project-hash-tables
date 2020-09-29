@@ -29,6 +29,7 @@ class HashTable:
         
         self.storage = [None] * capacity
         self.capacity = capacity
+        self.count_of_items = 0
 
     def print_ht(self):
         for i in range(len(self.storage)):
@@ -38,7 +39,9 @@ class HashTable:
                 string = ""
                 cur = self.storage[i]
                 while cur is not None:
-                    string += f"({cur.key}, {cur.value}) -> "
+                    string += f"({cur.key}, {cur.value}) "
+                    if cur.next is not None:
+                        string += "-> "
                     cur = cur.next
                 print(string)
 
@@ -63,12 +66,8 @@ class HashTable:
 
         Implement this.
         """
-        count = 0
-        for i in self.storage:
-            if i:
-                count += 1
-
-        return count / self.capacity
+        num_slots = self.get_num_slots()
+        return self.count_of_items / num_slots
 
 
     def fnv1(self, key):
@@ -124,6 +123,12 @@ class HashTable:
             new_entry = HashTableEntry(key, value)
             new_entry.next = self.storage[index]
             self.storage[index] = new_entry
+        self.count_of_items += 1
+
+        lf = self.get_load_factor()
+        if lf > 0.7:
+                num_slots = self.get_num_slots()
+                self.resize(num_slots * 2)
 
 
 
@@ -145,8 +150,11 @@ class HashTable:
 
         if self.storage[index].key == key:
             new_head = self.storage[index].next
+            old_head = self.storage[index]
             self.storage[index].next = None
             self.storage[index] = new_head
+            self.count_of_items -= 1
+            return old_head.value
 
         else: 
             prev = self.storage[index]
@@ -155,6 +163,7 @@ class HashTable:
                 if current.key == key:
                     prev.next = current.next
                     current.next == None
+                    self.count_of_items -= 1
                     return current.value
                 prev = prev.next
                 current = current.next
@@ -191,7 +200,16 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        old_storage = self.storage
+        self.storage = [None] * new_capacity
+        self.capacity = new_capacity
+        self.count_of_items = 0
+
+        for node in old_storage:
+            while node is not None:
+                self.put(node.key, node.value)
+                node = node.next
+
 
 
 
@@ -229,21 +247,3 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
-
-    # GET(key)
-    #     get the index for the key
-    #     search the linked list at that index for the key
-    #     if found, return the value
-    #     else return None
-
-    # PUT(key):
-    #     get the index for the key
-    #     search the linked list at that index for the key
-    #     if key is found, overwrite the value stored there
-    #     else insert the key and value at the head of the list at that index
-
-    # DELETE(key)
-    #     get the index for the key
-    #     search the linked list for the key at that index
-    #     if found, delete it, return it
-    #     else return None
