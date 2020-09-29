@@ -30,6 +30,19 @@ class HashTable:
         self.storage = [None] * capacity
         self.capacity = capacity
 
+    def print_ht(self):
+        for i in range(len(self.storage)):
+            if self.storage[i] is None:
+                print('None')
+            else:
+                string = ""
+                cur = self.storage[i]
+                while cur is not None:
+                    string += f"({cur.key}, {cur.value}) -> "
+                    cur = cur.next
+                print(string)
+
+
 
     def get_num_slots(self):
         """
@@ -50,7 +63,12 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        count = 0
+        for i in self.storage:
+            if i:
+                count += 1
+
+        return count / self.capacity
 
 
     def fnv1(self, key):
@@ -71,8 +89,8 @@ class HashTable:
         """
         hash = 5381
         for c in key:
-            hash = ((hash << 5) + hash) + ord(c)
-        return hash & 0xFFFFFFFF
+            hash = ((hash << 5) + hash) + ord(c) & 0xFFFFFFFF
+        return hash
 
 
     def hash_index(self, key):
@@ -92,7 +110,23 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        self.storage[index] = HashTableEntry(key, value)
+
+        if self.storage[index] is None:
+            self.storage[index] = HashTableEntry(key, value)
+        else: 
+            current = self.storage[index]
+            while current:
+                if current.key == key:
+                    current.value = value
+                    return
+                current = current.next
+
+            new_entry = HashTableEntry(key, value)
+            new_entry.next = self.storage[index]
+            self.storage[index] = new_entry
+
+
+
 
 
     def delete(self, key):
@@ -107,8 +141,27 @@ class HashTable:
 
         if self.storage[index] == None:
             print('Key does not exist')
+            return None
 
-        self.storage[index] = None
+        if self.storage[index].key == key:
+            new_head = self.storage[index].next
+            self.storage[index].next = None
+            self.storage[index] = new_head
+
+        else: 
+            prev = self.storage[index]
+            current = self.storage[index].next
+            while current is not None:
+                if current.key == key:
+                    prev.next = current.next
+                    current.next == None
+                    return current.value
+                prev = prev.next
+                current = current.next
+                
+            print('Key does not exist')
+            return None
+
 
 
     def get(self, key):
@@ -122,8 +175,13 @@ class HashTable:
         index = self.hash_index(key)
         if not self.storage[index]:
             return None
-
-        return self.storage[index].value
+        else:
+            current = self.storage[index]
+            while current:
+                if current.key == key:
+                    return current.value
+                current = current.next
+            return None
 
 
     def resize(self, new_capacity):
@@ -171,3 +229,21 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+
+    # GET(key)
+    #     get the index for the key
+    #     search the linked list at that index for the key
+    #     if found, return the value
+    #     else return None
+
+    # PUT(key):
+    #     get the index for the key
+    #     search the linked list at that index for the key
+    #     if key is found, overwrite the value stored there
+    #     else insert the key and value at the head of the list at that index
+
+    # DELETE(key)
+    #     get the index for the key
+    #     search the linked list for the key at that index
+    #     if found, delete it, return it
+    #     else return None
