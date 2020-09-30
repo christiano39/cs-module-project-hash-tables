@@ -3,7 +3,8 @@ import random
 # Read in all the words in one go
 with open("input.txt") as f:
     words = f.read()
-    words.replace('\n', '')
+    words.replace('\n', ' ')
+    words.replace('\r', ' ')
     words = words.split(" ")
 
 # TODO: analyze which words can follow other words
