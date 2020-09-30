@@ -17,14 +17,14 @@ def slowfun(x, y):
     Rewrite slowfun_too_slow() in here so that the program produces the same
     output, but completes quickly instead of taking ages to run.
     """
-    if f"{x},{y}" in answers:
-        return answers[f"{x},{y}"]
+    if (x, y) in answers:
+        return answers[(x, y)]
     else:
         v = math.pow(x, y)
         v = math.factorial(v)
         v //= (x + y)
         v %= 982451653
-        answers[f"{x},{y}"] = v
+        answers[(x, y)] = v
         return v
 
 
