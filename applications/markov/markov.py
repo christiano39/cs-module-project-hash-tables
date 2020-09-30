@@ -24,8 +24,16 @@ for i in range(len(words) - 1):
 
 # TODO: construct 5 random sentences
 # Your code here
+def toAlpha(word):
+    alpha = ''
+    for c in word:
+        if c.isalpha():
+            alpha += c
+
+    return alpha
+
 def construct_sentence():
-    starting_word = random.choice([w for w in words if w.capitalize() == w])
+    starting_word = random.choice([w for w in words if toAlpha(w).capitalize() == toAlpha(w)])
     print(starting_word, end=" ")
 
     current_word = starting_word
@@ -34,6 +42,5 @@ def construct_sentence():
         print(current_word, end=" ")
 
 for i in range(5):
-    print(f"#{i + 1}")
     construct_sentence()
     print('\n')
