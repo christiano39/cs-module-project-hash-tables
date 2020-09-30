@@ -1,11 +1,15 @@
 import random
+import re
 
 # Read in all the words in one go
 with open("input.txt") as f:
     words = f.read()
-    words.replace('\n', ' ')
-    words.replace('\r', ' ')
-    words = words.split(" ")
+
+    delimeters = " ", "\n", "\t", "\r"
+    regex_pattern = '|'.join(map(re.escape, delimeters))
+
+    words = re.split(regex_pattern, words)
+    words = [w for w in words if w != '']
 
 # TODO: analyze which words can follow other words
 # Your code here
